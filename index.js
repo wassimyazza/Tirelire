@@ -1,5 +1,5 @@
-import express from "express";
 import 'dotenv/config';
+import express from "express";
 import session from "express-session";
 import webRoutes from "./routes/web.js";
 import connectDB from './app/config/db.js'

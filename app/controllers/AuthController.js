@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt, { hash } from "bcrypt";
+import { generateToken } from '../utils/jwt.js';
 export default class AuthController{
 
     static async register(req,res){
@@ -48,11 +49,10 @@ export default class AuthController{
 
         await user.save();
 
-        req.session.userId = user._id;
-        req.session.email = user.email;
+        const token = generateToken(user);
 
         const userResponse = user.toObject();
-        return res.status(201).json(userResponse);
+        return res.status(201).json({userResponse,token: token});
     }   
 
     static async login(req, res){
@@ -78,10 +78,9 @@ export default class AuthController{
             return res.status(400).json({message: "Invalid Email or Password!"});
         }
 
-        req.session.userId = checkExict.id;
-        req.session.password = checkExict.password;
+        const token = generateToken(checkExict);
 
-        return res.status(200).json({"message": "Login Successfuly!"});
+        return res.status(200).json({"message": "Login Successfuly!",token: token});
 
     }
 
