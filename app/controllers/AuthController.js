@@ -84,4 +84,12 @@ export default class AuthController{
 
     }
 
+    static async profile(req, res){
+        try{
+            const getUser = await User.findById(req.user.userId);
+            res.status(200).json(getUser);
+        }catch(err){
+            console.log("errors", err);
+        }
+    }
 }
