@@ -17,3 +17,10 @@ export const checkAuth = (req, res, next) => {
     return res.json({ success: false, message: 'Invalid token' });
   }
 };
+
+export const checkAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Admin only!' });
+  }
+  next();
+};

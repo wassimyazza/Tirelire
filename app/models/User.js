@@ -1,28 +1,38 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const groupSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    email: {
+    description: {
         type: String,
         required: true
     },
-    password: {
-        type: String,
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    amountPerMonth: {
+        type: Number,
         required: true,
-        minlength: 6
+        min: 0
     },
-    role: {
+    totalMembers: {
+        type: Number,
+        required: true,
+        min: 2
+    },
+    currentRound: {
+        type: Number,
+        default: 1
+    },
+    status: {
         type: String,
-        enum: ['user', 'admin'],  
-        default: 'user'          
-    },
-    isVerified: {
-        type: Boolean,
-        default: false
+        enum: ['active', 'completed', 'cancelled'],
+        default: 'active'
     }
-},{timestamps:true});
+}, { timestamps: true });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model('Group', groupSchema);
