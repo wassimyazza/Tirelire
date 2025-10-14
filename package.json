@@ -1,11 +1,14 @@
 {
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.80",
+    "@vladmandic/face-api": "^1.7.15",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "face-api.js": "^0.22.2",
     "form-data": "^4.0.4",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1",

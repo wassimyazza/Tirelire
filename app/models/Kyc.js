@@ -22,7 +22,18 @@ const kycSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
+    },
+    faceMatchScore: {
+        type: String
+    },
+    faceMatchDistance: {
+        type: String
+    },
+    validatedBy: {
+        type: String,
+        enum: ['automatic', 'manual'],
+        default: 'automatic'
     }
-}, { timestamps: true });
+}, {timestamps: true});
 
 export default mongoose.model('Kyc', kycSchema);
