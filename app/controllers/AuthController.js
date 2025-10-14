@@ -1,95 +1,99 @@
 import User from "../models/User.js";
-import bcrypt, { hash } from "bcrypt";
+import bcrypt from "bcrypt";
 import { generateToken } from '../utils/jwt.js';
+
 export default class AuthController{
 
     static async register(req,res){
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
-        const ConfirmPassword = req.body.confirmPassword;
-        const role = req.body.role;
-
+        const {name, email, password, confirmPassword, role} = req.body;
         const errors = [];
 
-        if(!name){
-            errors.push("Name is required!");
-        }
-        if(!email){
-            errors.push("Email is required!");
-        }
-        if(!password){
-            errors.push("Password is required!");
-        }
-        if(password != ConfirmPassword){
-            errors.push("Confirm password is incorrect!");
-        }
-        if(role != "user" && role != "admin"){
-            errors.push("Invalid role!");
-        }
+        if(!name) errors.push("Name is required!");
+        if(!email) errors.push("Email is required!");
+        if(!password) errors.push("Password is required!");
+        if(password != confirmPassword) errors.push("Passwords do not match!");
+        if(role && role != "user" && role != "admin") errors.push("Invalid role!");
 
         if(errors.length > 0){
-            return res.status(400).json({error: errors});
+            return res.status(400).json({success: false, errors});
         }
 
-        const checkEmail = await User.findOne({email: email});
+        const checkEmail = await User.findOne({email});
         if(checkEmail){
-            return res.status(400).json({
-                message: "Email already exict!"
-            })
+            return res.status(400).json({success: false, message: "Email already exists!"});
         }
-        const hashedPassword = await bcrypt.hash(password,10);
 
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            name: name,
-            email: email,
+            name,
+            email,
             password: hashedPassword,
-            role: role
+            role: role || "user"
         });
 
         await user.save();
-
         const token = generateToken(user);
 
-        const userResponse = user.toObject();
-        return res.status(201).json({userResponse,token: token});
+        return res.status(201).json({
+            success: true,
+            message: "Registration successful!",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isVerified: user.isVerified
+            }
+        });
     }   
 
     static async login(req, res){
-        const email = req.body.email;
-        const password = req.body.password;
+        const {email, password} = req.body;
         const errors = [];
-        if(!email){
-            errors.push("Email is required!");
-        }
-        if(!password){
-            errors.push("Password is required!");
-        }
-        if(errors.length >0){
-            return res.status(400).json({"errors": errors});
-        }
-        const checkExict = await User.findOne({email: email});
-        if(!checkExict){
-            return res.status(400).json({message: "Email doesn't exict!"});
-        }
-        const getPassword = checkExict.password;
-        const checkPassword = await bcrypt.compare(password, getPassword);
-        if(!checkPassword){
-            return res.status(400).json({message: "Invalid Email or Password!"});
+
+        if(!email) errors.push("Email is required!");
+        if(!password) errors.push("Password is required!");
+
+        if(errors.length > 0){
+            return res.status(400).json({success: false, errors});
         }
 
-        const token = generateToken(checkExict);
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({success: false, message: "Invalid credentials!"});
+        }
 
-        return res.status(200).json({"message": "Login Successfuly!",token: token});
+        const isMatch = await bcrypt.compare(password, user.password);
+        if(!isMatch){
+            return res.status(400).json({success: false, message: "Invalid credentials!"});
+        }
 
+        const token = generateToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Login successful!",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isVerified: user.isVerified
+            }
+        });
     }
 
     static async profile(req, res){
         try{
-            const getUser = await User.findById(req.user.userId);
-            res.status(200).json(getUser);
+            const user = await User.findById(req.user.userId).select('-password');
+            if(!user){
+                return res.status(404).json({success: false, message: "User not found"});
+            }
+            res.status(200).json({success: true, data: user});
         }catch(err){
-            console.log("errors", err);
+            res.status(500).json({success: false, message: "Server error"});
         }
     }
 }
