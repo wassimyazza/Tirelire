@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
-
 export const checkAuth = (req, res, next) => {
   const token = req.headers.token;
   
@@ -20,7 +19,7 @@ export const checkAuth = (req, res, next) => {
 
 export const checkAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
-    return res.status(403).json({ success: false, message: 'Admin only!' });
+    return res.status(403).json({ success: false, message: 'Admin only' });
   }
   next();
 };
