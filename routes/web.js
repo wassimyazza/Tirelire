@@ -21,6 +21,7 @@ router.put("/kyc/:kycId/status", checkAuth, checkAdmin, KycController.updateStat
 
 router.post("/groups", checkAuth, GroupController.create);
 router.get("/groups", checkAuth, GroupController.getAll);
+router.get("/groups/my", checkAuth, GroupController.getMyGroups);
 router.get("/groups/:groupId", checkAuth, GroupController.getById);
 router.post("/groups/:groupId/join", checkAuth, GroupController.join);
 

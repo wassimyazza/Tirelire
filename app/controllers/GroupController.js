@@ -116,4 +116,15 @@ export default class GroupController {
         }
     }
 
+    static async getMyGroups(req, res) {
+        try {
+            const userId = req.user.userId;
+            const memberships = await GroupMember.find({userId}).populate('groupId');
+            const groups = memberships.map(m => m.groupId);
+            res.status(200).json({success: true, count: groups.length, data: groups});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error fetching groups"});
+        }
+    }
+
 }
