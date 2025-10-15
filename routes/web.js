@@ -20,5 +20,6 @@ router.get("/kyc/all", checkAuth, checkAdmin, KycController.getAll);
 router.put("/kyc/:kycId/status", checkAuth, checkAdmin, KycController.updateStatus);
 
 router.post("/groups", checkAuth, GroupController.create);
+router.get("/groups", checkAuth, GroupController.getAll);
 
 export default router;

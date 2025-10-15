@@ -45,4 +45,13 @@ export default class GroupController {
         }
     }
 
+    static async getAll(req, res) {
+        try {
+            const groups = await Group.find().populate('creatorId', 'name email').sort({createdAt: -1});
+            res.status(200).json({success: true, count: groups.length, data: groups});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error fetching groups"});
+        }
+    }
+
 }
