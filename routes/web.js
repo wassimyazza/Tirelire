@@ -3,6 +3,7 @@ import { checkAuth, checkAdmin } from "../app/middleware/auth.js";
 import { upload } from "../app/config/multer.js";
 import AuthController from "../app/controllers/AuthController.js";
 import KycController from "../app/controllers/KycController.js";
+import GroupController from "../app/controllers/GroupController.js";
 
 const router = express.Router();
 
@@ -17,5 +18,7 @@ router.post("/kyc/submit", checkAuth, upload.fields([
 router.get("/kyc/status", checkAuth, KycController.getStatus);
 router.get("/kyc/all", checkAuth, checkAdmin, KycController.getAll);
 router.put("/kyc/:kycId/status", checkAuth, checkAdmin, KycController.updateStatus);
+
+router.post("/groups", checkAuth, GroupController.create);
 
 export default router;
