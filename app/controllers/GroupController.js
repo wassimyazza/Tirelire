@@ -71,4 +71,49 @@ export default class GroupController {
         }
     }
 
+    static async join(req, res) {
+        try {
+            const userId = req.user.userId;
+            const {groupId} = req.params;
+
+            const user = await User.findById(userId);
+            if(!user.isVerified){
+                return res.status(403).json({success: false, message: "Complete KYC verification first"});
+            }
+
+            const group = await Group.findById(groupId);
+            if(!group){
+                return res.status(404).json({success: false, message: "Group not found"});
+            }
+
+            if(group.currentMembers >= group.maxMembers){
+                return res.status(400).json({success: false, message: "Group is full"});
+            }
+
+            const existingMember = await GroupMember.findOne({groupId, userId});
+            if(existingMember){
+                return res.status(400).json({success: false, message: "Already a member"});
+            }
+
+            const nextOrder = group.currentMembers + 1;
+            const groupMember = new GroupMember({
+                groupId,
+                userId,
+                order: nextOrder
+            });
+
+            await groupMember.save();
+
+            group.currentMembers += 1;
+            if(group.currentMembers === group.maxMembers){
+                group.status = 'active';
+            }
+            await group.save();
+
+            res.status(200).json({success: true, message: "Joined group", data: groupMember});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error joining group"});
+        }
+    }
+
 }
