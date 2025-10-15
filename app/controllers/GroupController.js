@@ -54,4 +54,21 @@ export default class GroupController {
         }
     }
 
+    static async getById(req, res) {
+        try {
+            const {groupId} = req.params;
+            const group = await Group.findById(groupId).populate('creatorId', 'name email');
+
+            if(!group){
+                return res.status(404).json({success: false, message: "Group not found"});
+            }
+
+            const members = await GroupMember.find({groupId}).populate('userId', 'name email').sort({order: 1});
+
+            res.status(200).json({success: true, data: {group, members}});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error fetching group"});
+        }
+    }
+
 }
