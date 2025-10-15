@@ -127,4 +127,32 @@ export default class GroupController {
         }
     }
 
+    static async startRound(req, res) {
+        try {
+            const userId = req.user.userId;
+            const {groupId} = req.params;
+
+            const group = await Group.findById(groupId);
+            if(!group){
+                return res.status(404).json({success: false, message: "Group not found"});
+            }
+
+            if(group.creatorId.toString() !== userId){
+                return res.status(403).json({success: false, message: "Only creator can start round"});
+            }
+
+            if(group.currentMembers < group.maxMembers){
+                return res.status(400).json({success: false, message: "Group not full yet"});
+            }
+
+            group.currentRound += 1;
+            group.status = 'active';
+            await group.save();
+
+            res.status(200).json({success: true, message: "Round started", data: group});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error starting round"});
+        }
+    }
+
 }
