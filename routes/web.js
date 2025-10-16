@@ -28,5 +28,6 @@ router.post("/groups/:groupId/join", checkAuth, GroupController.join);
 router.post("/groups/:groupId/start-round", checkAuth, GroupController.startRound);
 
 router.post("/contributions/pay", checkAuth, ContributionController.pay);
+router.get("/contributions/group/:groupId", checkAuth, ContributionController.getGroupContributions);
 
 export default router;
