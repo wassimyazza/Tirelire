@@ -4,6 +4,7 @@ import { upload } from "../app/config/multer.js";
 import AuthController from "../app/controllers/AuthController.js";
 import KycController from "../app/controllers/KycController.js";
 import GroupController from "../app/controllers/GroupController.js";
+import ContributionController from "../app/controllers/ContributionController.js";
 
 const router = express.Router();
 
@@ -25,5 +26,7 @@ router.get("/groups/my", checkAuth, GroupController.getMyGroups);
 router.get("/groups/:groupId", checkAuth, GroupController.getById);
 router.post("/groups/:groupId/join", checkAuth, GroupController.join);
 router.post("/groups/:groupId/start-round", checkAuth, GroupController.startRound);
+
+router.post("/contributions/pay", checkAuth, ContributionController.pay);
 
 export default router;
