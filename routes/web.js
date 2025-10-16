@@ -30,5 +30,6 @@ router.post("/groups/:groupId/start-round", checkAuth, GroupController.startRoun
 router.post("/contributions/pay", checkAuth, ContributionController.pay);
 router.get("/contributions/group/:groupId", checkAuth, ContributionController.getGroupContributions);
 router.get("/contributions/my", checkAuth, ContributionController.getMyContributions);
+router.post("/contributions/distribute/:groupId", checkAuth, ContributionController.distribute);
 
 export default router;

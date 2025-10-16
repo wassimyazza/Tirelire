@@ -78,4 +78,44 @@ export default class ContributionController {
         }
     }
 
+    static async distribute(req, res) {
+        try {
+            const {groupId} = req.params;
+            const {beneficiaryId} = req.body;
+
+            const group = await Group.findById(groupId);
+            if(!group){
+                return res.status(404).json({success: false, message: "Group not found"});
+            }
+
+            const contributions = await Contribution.find({
+                groupId,
+                round: group.currentRound,
+                status: 'paid'
+            });
+
+            if(contributions.length < group.maxMembers){
+                return res.status(400).json({success: false, message: "Not all members paid yet"});
+            }
+
+            const totalAmount = contributions.reduce((sum, c) => sum + c.amount, 0);
+
+            const beneficiary = await GroupMember.findOne({groupId, userId: beneficiaryId});
+            if(!beneficiary){
+                return res.status(404).json({success: false, message: "Beneficiary not found"});
+            }
+
+            beneficiary.hasReceived = true;
+            await beneficiary.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Distribution successful",
+                data: {beneficiaryId, totalAmount}
+            });
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error distributing funds"});
+        }
+    }
+
 }
