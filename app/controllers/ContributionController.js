@@ -63,4 +63,19 @@ export default class ContributionController {
         }
     }
 
+    static async getMyContributions(req, res) {
+        try {
+            const userId = req.user.userId;
+            
+            const contributions = await Contribution.find({userId})
+                .populate('groupId', 'name contributionAmount')
+                .sort({createdAt: -1});
+                
+            res.status(200).json({success: true, count: contributions.length, data: contributions});
+        } catch (error) {
+            console.log("Error:", error);
+            res.status(500).json({success: false, message: "Error fetching contributions"});
+        }
+    }
+
 }
