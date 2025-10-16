@@ -5,6 +5,7 @@ import AuthController from "../app/controllers/AuthController.js";
 import KycController from "../app/controllers/KycController.js";
 import GroupController from "../app/controllers/GroupController.js";
 import ContributionController from "../app/controllers/ContributionController.js";
+import MessageController from "../app/controllers/MessageController.js";
 
 const router = express.Router();
 
@@ -31,5 +32,7 @@ router.post("/contributions/pay", checkAuth, ContributionController.pay);
 router.get("/contributions/group/:groupId", checkAuth, ContributionController.getGroupContributions);
 router.get("/contributions/my", checkAuth, ContributionController.getMyContributions);
 router.post("/contributions/distribute/:groupId", checkAuth, ContributionController.distribute);
+
+router.post("/messages/send", checkAuth, MessageController.send);
 
 export default router;
