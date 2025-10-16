@@ -34,5 +34,6 @@ router.get("/contributions/my", checkAuth, ContributionController.getMyContribut
 router.post("/contributions/distribute/:groupId", checkAuth, ContributionController.distribute);
 
 router.post("/messages/send", checkAuth, MessageController.send);
+router.get("/messages/group/:groupId", checkAuth, MessageController.getGroupMessages);
 
 export default router;
