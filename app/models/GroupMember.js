@@ -32,7 +32,14 @@ const groupMemberSchema = new mongoose.Schema({
     joinedAt: {
         type: Date,
         default: Date.now
+    },
+    receivedAt: {
+        type: Date
+    },
+    amountReceived: {
+        type: Number,
+        default: 0
     }
-}, {timestamps: true});
+}, { timestamps: true });
 
 export default mongoose.model('GroupMember', groupMemberSchema);

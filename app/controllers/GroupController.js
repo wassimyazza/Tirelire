@@ -10,12 +10,28 @@ export default class GroupController {
             const {name, description, contributionAmount, paymentDeadline, maxMembers} = req.body;
 
             const user = await User.findById(userId);
+            if(!user){
+                return res.status(404).json({success: false, message: "User not found"});
+            }
+
             if(!user.isVerified){
                 return res.status(403).json({success: false, message: "Complete KYC verification first"});
             }
 
-            if(!name || !contributionAmount || !paymentDeadline || !maxMembers){
-                return res.status(400).json({success: false, message: "All fields required"});
+            if(!name){
+                return res.status(400).json({success: false, message: "Name is required"});
+            }
+
+            if(!contributionAmount){
+                return res.status(400).json({success: false, message: "Contribution amount is required"});
+            }
+
+            if(!paymentDeadline){
+                return res.status(400).json({success: false, message: "Payment deadline is required"});
+            }
+
+            if(!maxMembers){
+                return res.status(400).json({success: false, message: "Max members is required"});
             }
 
             const group = new Group({
@@ -26,6 +42,7 @@ export default class GroupController {
                 paymentDeadline,
                 maxMembers,
                 currentMembers: 1,
+                totalRounds: maxMembers,
                 status: 'forming'
             });
 
@@ -41,7 +58,8 @@ export default class GroupController {
 
             res.status(201).json({success: true, message: "Group created", data: group});
         } catch (error) {
-            res.status(500).json({success: false, message: "Error creating group"});
+            console.log("Error:", error);
+            res.status(500).json({success: false, message: error.message});
         }
     }
 
@@ -105,9 +123,6 @@ export default class GroupController {
             await groupMember.save();
 
             group.currentMembers += 1;
-            if(group.currentMembers === group.maxMembers){
-                group.status = 'active';
-            }
             await group.save();
 
             res.status(200).json({success: true, message: "Joined group", data: groupMember});
@@ -145,14 +160,18 @@ export default class GroupController {
                 return res.status(400).json({success: false, message: "Group not full yet"});
             }
 
-            group.currentRound += 1;
+            if(group.status === 'active'){
+                return res.status(400).json({success: false, message: "Round already started"});
+            }
+
+            group.currentRound = 1;
             group.status = 'active';
+            group.currentBeneficiaryOrder = 0;
             await group.save();
 
-            res.status(200).json({success: true, message: "Round started", data: group});
+            res.status(200).json({success: true, message: "Round started successfully", data: group});
         } catch (error) {
             res.status(500).json({success: false, message: "Error starting round"});
         }
     }
-
 }

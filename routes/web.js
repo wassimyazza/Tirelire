@@ -1,12 +1,14 @@
 import express from "express";
-import { checkAuth, checkAdmin } from "../app/middleware/auth.js";
 import { upload } from "../app/config/multer.js";
+import { checkAuth, checkAdmin } from "../app/middleware/auth.js";
 import AuthController from "../app/controllers/AuthController.js";
 import KycController from "../app/controllers/KycController.js";
 import GroupController from "../app/controllers/GroupController.js";
 import ContributionController from "../app/controllers/ContributionController.js";
 import MessageController from "../app/controllers/MessageController.js";
 import TicketController from "../app/controllers/TicketController.js";
+import AdminController from "../app/controllers/AdminController.js";
+
 
 const router = express.Router();
 
@@ -30,9 +32,11 @@ router.post("/groups/:groupId/join", checkAuth, GroupController.join);
 router.post("/groups/:groupId/start-round", checkAuth, GroupController.startRound);
 
 router.post("/contributions/pay", checkAuth, ContributionController.pay);
-router.get("/contributions/group/:groupId", checkAuth, ContributionController.getGroupContributions);
 router.get("/contributions/my", checkAuth, ContributionController.getMyContributions);
-router.post("/contributions/distribute/:groupId", checkAuth, ContributionController.distribute);
+router.get("/contributions/group/:groupId", checkAuth, ContributionController.getGroupContributions);
+router.get("/contributions/round-status/:groupId", checkAuth, ContributionController.getRoundStatus);
+router.get("/distributions/group/:groupId", checkAuth, ContributionController.getDistributions);
+router.get("/distributions/my", checkAuth, ContributionController.getMyDistributions);
 
 router.post("/messages/send", checkAuth, MessageController.send);
 router.get("/messages/group/:groupId", checkAuth, MessageController.getGroupMessages);
@@ -42,5 +46,10 @@ router.get("/tickets/my", checkAuth, TicketController.getMyTickets);
 router.get("/tickets/all", checkAuth, checkAdmin, TicketController.getAllTickets);
 router.put("/tickets/:ticketId/status", checkAuth, checkAdmin, TicketController.updateStatus);
 router.post("/tickets/:ticketId/respond", checkAuth, TicketController.respond);
+
+router.get("/admin/dashboard", checkAuth, checkAdmin, AdminController.dashboard);
+router.get("/admin/users", checkAuth, checkAdmin, AdminController.getAllUsers);
+router.delete("/admin/users/:userId", checkAuth, checkAdmin, AdminController.deleteUser);
+router.get("/admin/groups", checkAuth, checkAdmin, AdminController.getAllGroups);
 
 export default router;

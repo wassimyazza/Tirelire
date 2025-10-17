@@ -37,6 +37,14 @@ const groupSchema = new mongoose.Schema({
     currentRound: {
         type: Number,
         default: 0
+    },
+    totalRounds: {
+        type: Number,
+        default: 0
+    },
+    currentBeneficiaryOrder: {
+        type: Number,
+        default: 0
     }
 }, {timestamps: true});
 
