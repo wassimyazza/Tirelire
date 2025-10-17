@@ -6,6 +6,7 @@ import KycController from "../app/controllers/KycController.js";
 import GroupController from "../app/controllers/GroupController.js";
 import ContributionController from "../app/controllers/ContributionController.js";
 import MessageController from "../app/controllers/MessageController.js";
+import TicketController from "../app/controllers/TicketController.js";
 
 const router = express.Router();
 
@@ -35,5 +36,9 @@ router.post("/contributions/distribute/:groupId", checkAuth, ContributionControl
 
 router.post("/messages/send", checkAuth, MessageController.send);
 router.get("/messages/group/:groupId", checkAuth, MessageController.getGroupMessages);
+
+router.post("/tickets", checkAuth, TicketController.create);
+router.get("/tickets/my", checkAuth, TicketController.getMyTickets);
+router.get("/tickets/all", checkAuth, checkAdmin, TicketController.getAllTickets);
 
 export default router;
