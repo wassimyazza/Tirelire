@@ -40,5 +40,7 @@ router.get("/messages/group/:groupId", checkAuth, MessageController.getGroupMess
 router.post("/tickets", checkAuth, TicketController.create);
 router.get("/tickets/my", checkAuth, TicketController.getMyTickets);
 router.get("/tickets/all", checkAuth, checkAdmin, TicketController.getAllTickets);
+router.put("/tickets/:ticketId/status", checkAuth, checkAdmin, TicketController.updateStatus);
+router.post("/tickets/:ticketId/respond", checkAuth, TicketController.respond);
 
 export default router;

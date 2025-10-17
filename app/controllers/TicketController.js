@@ -51,4 +51,51 @@ export default class TicketController {
         }
     }
 
+    static async updateStatus(req, res) {
+        try {
+            const {ticketId} = req.params;
+            const {status} = req.body;
+
+            if(!['open', 'in_progress', 'resolved', 'closed'].includes(status)){
+                return res.status(400).json({success: false, message: "Invalid status"});
+            }
+
+            const ticket = await Ticket.findById(ticketId);
+            if(!ticket){
+                return res.status(404).json({success: false, message: "Ticket not found"});
+            }
+
+            ticket.status = status;
+            await ticket.save();
+
+            res.status(200).json({success: true, message: "Ticket updated", data: ticket});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error updating ticket"});
+        }
+    }
+
+    static async respond(req, res) {
+        try {
+            const userId = req.user.userId;
+            const {ticketId} = req.params;
+            const {message} = req.body;
+
+            const ticket = await Ticket.findById(ticketId);
+            if(!ticket){
+                return res.status(404).json({success: false, message: "Ticket not found"});
+            }
+
+            ticket.responses.push({
+                responderId: userId,
+                message,
+                createdAt: new Date()
+            });
+
+            await ticket.save();
+
+            res.status(200).json({success: true, message: "Response added", data: ticket});
+        } catch (error) {
+            res.status(500).json({success: false, message: "Error responding to ticket"});
+        }
+    }
 }
